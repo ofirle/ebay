@@ -1,11 +1,14 @@
 text	label
-iphone X	0
+iphone X 	0
 iphone 8	1
 new iphone x	0
-galaxy note	2
+galaxy note 160GB	2
 brand new galaxy note 320GB	2
 apple iphone 8 new	1
 brand new iphone x	0
 galaxy note new	2
-best iphone X	0
+best iphone X - USA	0
 SALE! iphone 8 new	1
+Galaxy phone new	2
+Apple iphone X 	0
+iphone APPLE 8, new!	1
