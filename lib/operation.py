@@ -1,5 +1,5 @@
 import pyodbc
-from DB.connector import DBConnector
+from lib.connector import DBConnector
 
 
 class DB:

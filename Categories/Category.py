@@ -1,6 +1,6 @@
 # from Categories.Category import Category
 import xml.etree.ElementTree as ET
-from DB.operation import DB
+from lib.operation import DB
 
 class Category:
     def __init__(self,
