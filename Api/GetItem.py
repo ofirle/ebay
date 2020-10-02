@@ -1,22 +1,56 @@
-import json
-from lxml import etree
+from lib.config.credentials import *
 from xml.etree import ElementTree as ET
 from io import BytesIO
+from Items.Item import Item
 import requests
 
 
 def getItem(item_id):
-    response = get_response(item_id)
-    return response
+    root = ET.Element("GetSingleItemRequest", xmlns="urn:ebay:apis:eBLBaseComponents")
+    item_id_elem = ET.SubElement(root, "ItemID")
+    item_id_elem.text = item_id
+    output_type_elem = ET.SubElement(root, "IncludeSelector")
+    output_type_elem.text = "Details,TextDescription,ItemSpecifics"
 
-def get_response(config_object, item_id):
-    endpoint = config_object['Production_endpoints']['item'] + item_id
+    f = BytesIO()
+    et = ET.ElementTree(root)
+    et.write(f, encoding="utf-8", xml_declaration=True)
+    response = get_response(f.getvalue())
+    handle_xml_response(response)
+
+
+def get_response(data):
+    endpoint = 'https://open.api.ebay.com/shopping'
 
     http_headers = {
-        "Authorization": 'Bearer AgAAAA**AQAAAA**aAAAAA**H5hKXw**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AHl4GkAJGFpwudj6x9nY+seQ**hmYGAA**AAMAAA**I6cGW3QDc5h45yOaJ95jG9ZN7zn+WbV6xztgTcSFhB2YZQjvRB61DorP75uS1AviaZ7Doe7Dqc9CtRFsiWaTwazV06HZYXnE8jKYBGa5ROyU18nuyv0BYKPbHftqgmMEcUK2eSqzDXodjTo6ZbCl74mMgkVg/MoxDUV/51wb8sCz2p1vMq7Y6zbdpo12DBZW+0qyNRCsuLEKznLGBJd3zADs3zbmFdgG7HGLKMrUb0v9kAeKKMaKfBodrHrw/MxR0HR71T9jWiFqqdPcciQ61tZ9R1ob53A2Jf++o/i5Xa//5mIY7ClTDt7sjeNIi3LVNfOsHOMdJSepzu62Q+8xBLB4y4nrvDtfXcXLVr5nOxx/uo+0xJck2P5nyYHPbZVCZaGoOOa8CqT6nWn7hB59gDykQhv/0mQPnWa2pg8FK1KVcaDMFn9wBcSLEAi6RnFLkQaXHVcDIA3M2J87333EgcupEKYteJlLFlPN6lEHfI1Aj/3dA/UEvk0wDCRiAeJ3l4kcEqP50mueqevBodXVDonf9kztAJJAUCzgVzDOdyWW8fl6Q0HPDaomD2zhf5iFgxNKCZMTZbhIYHdCkT38Kalz4XHSoa1pbVu9YlbORy1jkwGq7EBhIzxqTudLP5OJDjsNizV1funyKw9OqXvAurAvuT76Olro9aHrdxzXcvfWQTEDcezeBZKISrnuU7hWbcmL8x/Envd6eCgWMY93UW6kHV/Mi5/gcJmlMVtjt0aWHCRNMWpnyK/mlR3OdqDw',
-        "Content-Type": 'application/json',
-        "X-EBAY-C-MARKETPLACE-ID": "EBAY_US",
-        "X-EBAY-C-ENDUSERCTX": 'contextualLocation=country=<2_character_country_code>,zip=<zip_code>,affiliateCampaignId=<ePNCampaignId>,affiliateReferenceId=<referenceId>'
-        }
-    response = requests.get(endpoint, headers=http_headers)
+        "X-EBAY-API-APP-ID": get_app_name(),
+        "X-EBAY-API-SITE-ID": "0",
+        "X-EBAY-API-CALL-NAME": "GetSingleItem",
+        "X-EBAY-API-VERSION": "863",
+        "X-EBAY-API-REQUEST-ENCODING": "xml"
+    }
+
+    response = requests.post(endpoint, data=data, headers=http_headers)
     return response.text
+
+
+def handle_xml_response(xml_string):
+    root = ET.fromstring(xml_string)
+    item = root.find('{urn:ebay:apis:eBLBaseComponents}Item')
+    item_id = item.find('{urn:ebay:apis:eBLBaseComponents}ItemID').text
+    description = item.find('{urn:ebay:apis:eBLBaseComponents}Description').text
+    primary_category_id = item.find('{urn:ebay:apis:eBLBaseComponents}PrimaryCategoryID').text
+    title = item.find('{urn:ebay:apis:eBLBaseComponents}Title').text
+    listing_start_time = item.find('{urn:ebay:apis:eBLBaseComponents}StartTime').text
+    condition_id = item.find('{urn:ebay:apis:eBLBaseComponents}ConditionID').text
+    listing_top_rated = item.find('{urn:ebay:apis:eBLBaseComponents}TopRatedListing').text
+    quantity_sold = item.find('{urn:ebay:apis:eBLBaseComponents}QuantitySold').text
+    item_object = Item(item_id=item_id,
+                       title=title,
+                       description=description,
+                       primary_category_id=primary_category_id,
+                       listing_start_time=listing_start_time,
+                       condition_id=condition_id,
+                       top_rated_listing=listing_top_rated,
+                       quantity=quantity_sold)
+    item_object.insert()

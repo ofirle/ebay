@@ -15,5 +15,5 @@ def main(request_type):
 
 if __name__ == '__main__':
     # request_type = sys.argv[1]
-    request_type = "ITEMS_BY_CATEGORY"
+    request_type = "ITEM"
     main(request_type)
