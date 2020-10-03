@@ -37,15 +37,19 @@ import pprint
 
 # print('silhouette_score:',silhouette_score(features, labels=cls.predict(features)))
 
+# read SQL tables
 conn = DBConnector()
 items = pd.read_sql('SELECT * FROM items', conn)
 
+# convert text to tokens and fit a vectorizer
 vectorizer = CountVectorizer(token_pattern=r"(?u)\b\w+\b", stop_words='english')
 X = vectorizer.fit_transform(items.title.values)
 print('A vectorizer was created with {} tokens'.format(len(vectorizer.get_feature_names())))
 
+# create an input dataframe based on token's occurrences
 data_df = pd.DataFrame(data=X.toarray(), columns=vectorizer.get_feature_names())
 
+# train a clustering model
 kmeans = MiniBatchKMeans(random_state=12345)
 kmean_indices = kmeans.fit_predict(data_df.values)
 print('\nClustering is finish: {} clusters were created'.format(len(set(kmean_indices))))
@@ -53,7 +57,6 @@ print('\nClustering is finish: {} clusters were created'.format(len(set(kmean_in
 # Visualization - reducing to two dimentions using PCA
 pca = PCA(n_components=2)
 scatter_plot_points = pca.fit_transform(X.toarray())
-
 colors = np.random.rand(len(set(kmean_indices)), 3)
 x_axis = [o[0] for o in scatter_plot_points]
 y_axis = [o[1] for o in scatter_plot_points]
@@ -63,3 +66,7 @@ ax.scatter(x_axis, y_axis, c=[colors[d] for d in kmean_indices])
 for i, txt in enumerate(items.title.values):
     ax.annotate(txt, (x_axis[i], y_axis[i]))
 plt.show()
+
+
+
+
