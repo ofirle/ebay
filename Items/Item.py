@@ -1,5 +1,3 @@
-# from Categories.Category import Category
-import xml.etree.ElementTree as ET
 from lib.operation import DB
 from datetime import datetime
 from Items.ItemLog import ItemLog
@@ -17,6 +15,8 @@ class Item:
                  quantity):
         self.item_id = item_id
         self.title = title
+        if description is None:
+            description = ''
         self.description = description
         self.primary_category_id = primary_category_id
         self.listing_start_time = listing_start_time
@@ -33,7 +33,7 @@ class Item:
         list_values = {
             'item_id': self.item_id,
             'title': self.title,
-            'description': self.description,
+            'description': self.description.replace("'", ''),
             'primary_category_id': self.primary_category_id,
             'listing_start_time': listing_start_time_timestamp,
             'condition_id': self.condition_id,

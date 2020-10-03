@@ -1,4 +1,3 @@
-from configparser import ConfigParser
 from Api.GetCategories import getCategories
 from Api.GetItemsByCategory import getItemsByCategory
 from Api.GetItem import getItem
@@ -8,7 +7,9 @@ def main(request_type):
     if request_type == 'CATEGORIES':
         getCategories()
     elif request_type == 'ITEMS_BY_CATEGORY':
-        getItemsByCategory('37908', '100', '1')
+        for i in range(1, 10):
+            print("getItemsByCategory: " + str(i))
+            getItemsByCategory('9355', '100', str(i))
     elif request_type == 'ITEM':
         getItem('254504665677')
 
