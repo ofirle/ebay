@@ -28,10 +28,8 @@ class Item:
         return str(self.__class__) + ": " + str(self.__dict__)
 
     def insert(self):
-        print(self.listing_start_time)
         output_date = datetime.strptime(self.listing_start_time, "%Y-%m-%dT%H:%M:%S.%fZ")
         listing_start_time_timestamp = int(output_date.replace(microsecond=0).timestamp())
-        print(int(datetime.timestamp(datetime.now())))
         list_values = {
             'item_id': self.item_id,
             'title': self.title,

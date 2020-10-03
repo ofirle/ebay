@@ -42,8 +42,14 @@ def handle_xml_response(xml_string):
     primary_category_id = item.find('{urn:ebay:apis:eBLBaseComponents}PrimaryCategoryID').text
     title = item.find('{urn:ebay:apis:eBLBaseComponents}Title').text
     listing_start_time = item.find('{urn:ebay:apis:eBLBaseComponents}StartTime').text
-    condition_id = item.find('{urn:ebay:apis:eBLBaseComponents}ConditionID').text
-    listing_top_rated = item.find('{urn:ebay:apis:eBLBaseComponents}TopRatedListing').text
+    try:
+        condition_id = item.find('{urn:ebay:apis:eBLBaseComponents}ConditionID').text
+    except:
+        condition_id = 0
+    try:
+        listing_top_rated = item.find('{urn:ebay:apis:eBLBaseComponents}TopRatedListing').text
+    except:
+        listing_top_rated = None
     quantity_sold = item.find('{urn:ebay:apis:eBLBaseComponents}QuantitySold').text
     item_object = Item(item_id=item_id,
                        title=title,
