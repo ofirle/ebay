@@ -7,7 +7,7 @@ def main(request_type):
     if request_type == 'CATEGORIES':
         getCategories()
     elif request_type == 'ITEMS_BY_CATEGORY':
-        for i in range(1, 10):
+        for i in range(26, 50):
             print("getItemsByCategory: " + str(i))
             getItemsByCategory('9355', '100', str(i))
     elif request_type == 'ITEM':

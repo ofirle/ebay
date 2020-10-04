@@ -33,7 +33,7 @@ class Item:
         list_values = {
             'item_id': self.item_id,
             'title': self.title,
-            'description': self.description.replace("'", ''),
+            'description': self.description.replace("'", ""),
             'primary_category_id': self.primary_category_id,
             'listing_start_time': listing_start_time_timestamp,
             'condition_id': self.condition_id,

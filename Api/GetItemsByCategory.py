@@ -43,6 +43,10 @@ def get_response(data):
 def handle_xml_response(xml_string):
     root = ET.fromstring(xml_string)
     items_array = root.find('{http://www.ebay.com/marketplace/search/v1/services}searchResult')
-    for item in items_array:
+    if items_array is None or len(items_array) == 0:
+        print("No Items")
+        return
+    for idx, item in enumerate(items_array):
         item_id = item.find('{http://www.ebay.com/marketplace/search/v1/services}itemId').text
         getItem(item_id)
+        print("index: " + str(idx) + " - item_id: " + item_id)

@@ -1,4 +1,5 @@
 from lib.config.credentials import *
+import sys
 from xml.etree import ElementTree as ET
 from io import BytesIO
 from Items.Item import Item
@@ -36,9 +37,21 @@ def get_response(data):
 
 def handle_xml_response(xml_string):
     root = ET.fromstring(xml_string)
+    errors = root.find('{urn:ebay:apis:eBLBaseComponents}Errors')
+    error_code = errors.find('{urn:ebay:apis:eBLBaseComponents}ErrorCode').text
+    if error_code == "1.21":
+        print("Limit Exceeded - GetItem")
+        sys.exit()
+
     item = root.find('{urn:ebay:apis:eBLBaseComponents}Item')
-    item_id = item.find('{urn:ebay:apis:eBLBaseComponents}ItemID').text
-    description = item.find('{urn:ebay:apis:eBLBaseComponents}Description').text
+    try:
+        item_id = item.find('{urn:ebay:apis:eBLBaseComponents}ItemID').text
+    except:
+        return
+    try:
+        description = item.find('{urn:ebay:apis:eBLBaseComponents}Description').text
+    except:
+        description = None
     primary_category_id = item.find('{urn:ebay:apis:eBLBaseComponents}PrimaryCategoryID').text
     title = item.find('{urn:ebay:apis:eBLBaseComponents}Title').text
     listing_start_time = item.find('{urn:ebay:apis:eBLBaseComponents}StartTime').text

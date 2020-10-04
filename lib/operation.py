@@ -17,9 +17,10 @@ class DB:
             conn.commit()
         except pyodbc.Error as ex:
             sqlstate = ex.args[0]
-            print(ex)
             if sqlstate == '23000':
                 print("Duplicate Row: " + sql)
                 pass
+            else:
+                print(ex)
 
 
