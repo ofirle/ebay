@@ -58,3 +58,7 @@ class Item:
              'adate')
         )
         return list_properties_names
+
+    @staticmethod
+    def is_item_exist(item_id):
+        return DB.is_exist('items', 'item_id', item_id)

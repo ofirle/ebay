@@ -5,8 +5,7 @@ from Api.GetItem import getItem
 import requests
 
 
-def getItemsByCategory(category_id, entries_per_page, page_number):
-
+def getItemsByCategory(category_id, entries_per_page, page_number, update_exist=True):
     root = ET.Element("findItemsByCategoryRequest", xmlns="http://www.ebay.com/marketplace/search/v1/services")
     pagination_input = ET.SubElement(root, "paginationInput")
     entries_per_page_elem = ET.SubElement(pagination_input, "entriesPerPage")
@@ -25,7 +24,7 @@ def getItemsByCategory(category_id, entries_per_page, page_number):
     f = BytesIO()
     et.write(f, encoding='utf-8', xml_declaration=True)
     response = get_response(f.getvalue())
-    handle_xml_response(response)
+    handle_xml_response(response, update_exist)
 
 
 def get_response(data):
@@ -40,7 +39,7 @@ def get_response(data):
     return response.text
 
 
-def handle_xml_response(xml_string):
+def handle_xml_response(xml_string, update_exist):
     root = ET.fromstring(xml_string)
     items_array = root.find('{http://www.ebay.com/marketplace/search/v1/services}searchResult')
     if items_array is None or len(items_array) == 0:
@@ -48,5 +47,5 @@ def handle_xml_response(xml_string):
         return
     for idx, item in enumerate(items_array):
         item_id = item.find('{http://www.ebay.com/marketplace/search/v1/services}itemId').text
-        getItem(item_id)
+        getItem(item_id, update_exist)
         print("index: " + str(idx) + " - item_id: " + item_id)

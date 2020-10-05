@@ -23,4 +23,24 @@ class DB:
             else:
                 print(ex)
 
+    @staticmethod
+    def is_exist(table_name, column_key, column_value):
+        try:
+            conn = DBConnector()
+            cursor = conn.cursor()
+            value = "{} = {}".format(column_key, column_value)
+            sql = "SELECT 1 FROM %s WHERE %s;" % (table_name, value)
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            conn.commit()
+            if len(rows) != 0:
+                return True
+            else:
+                return False
+
+        except pyodbc.Error as ex:
+            print(ex)
+            print("Error: " + sql)
+
+
 

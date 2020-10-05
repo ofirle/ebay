@@ -6,7 +6,11 @@ from Items.Item import Item
 import requests
 
 
-def getItem(item_id):
+def getItem(item_id, update_exist=True):
+    if update_exist is False and Item.is_item_exist(item_id):
+        print("     Item Already Exist")
+        return
+
     root = ET.Element("GetSingleItemRequest", xmlns="urn:ebay:apis:eBLBaseComponents")
     item_id_elem = ET.SubElement(root, "ItemID")
     item_id_elem.text = item_id
@@ -37,11 +41,14 @@ def get_response(data):
 
 def handle_xml_response(xml_string):
     root = ET.fromstring(xml_string)
-    errors = root.find('{urn:ebay:apis:eBLBaseComponents}Errors')
-    error_code = errors.find('{urn:ebay:apis:eBLBaseComponents}ErrorCode').text
-    if error_code == "1.21":
-        print("Limit Exceeded - GetItem")
-        sys.exit()
+    try:
+        errors = root.find('{urn:ebay:apis:eBLBaseComponents}Errors')
+        error_code = errors.find('{urn:ebay:apis:eBLBaseComponents}ErrorCode').text
+        if error_code == "1.21":
+            print("Limit Exceeded - GetItem")
+            sys.exit(1)
+    except:
+        pass
 
     item = root.find('{urn:ebay:apis:eBLBaseComponents}Item')
     try:
